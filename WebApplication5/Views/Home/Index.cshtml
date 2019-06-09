@@ -1,31 +1,192 @@
-﻿@{
+﻿@model WebApplication5.Models.bookSearchArgs
+
+@{
     ViewBag.Title = "Home Page";
 }
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "bookSearch" }))
+{
+    <div class="form-horizontal justify-content-center" id="searchGrid">
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BOOK_NAME, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_NAME, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BOOK_CLASS_ID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_CLASS_ID, new { @class = "form-control", id = "searchBookClass" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BOOK_KEEPER, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_KEEPER, new { @class = "form-control", id = "searchBookKeeper" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.BOOK_STATUS, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_STATUS, new { @class = "form-control", id = "searchBookStatus" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-10">
+                <input type="submit" value="查詢" id="searchBtn" class="btn btn-default"/>
+                @Html.ActionLink("新增", "InsertBook", null, new {@class = "btn btn-default" })
+                @Html.ActionLink("清除", "Index", null, new { @class = "btn btn-default" })
+            </div>
+        </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+    <div id="searchBookResultGrid"></div>
+}
+
+<script>
+    $(function () {
+        console.log("ready");
+        searchBookClassList();
+        searchBookKeeperList();
+        searchBookStatusList();
+        searchBookResultGrid();
+        searchBook();
+    });
+    function searchBookClassList() {
+        $.ajax({
+            type: "Post",
+            url: "/Home/SearchBookClassName",
+            datatype: "json",
+            success: function (response) {
+                $("#searchBookClass").kendoDropDownList({
+                    dataValueField: "BOOK_CLASS_ID",
+                    dataTextField: "BOOK_CLASS_NAME",
+                    dataSource: response,
+                    optionLabel: "請選擇...",
+                });
+            }, error: function (error) {
+                console.log(error);
+                alert("系統發生錯誤");
+            }
+        });
+    }
+    function searchBookStatusList() {
+        $.ajax({
+            type: "Post",
+            url: "/Home/SearchBookStatusName",
+            datatype: "json",
+            success: function (response) {
+                $("#searchBookStatus").kendoDropDownList({
+                    dataValueField: "CODE_ID",
+                    dataTextField: "CODE_NAME",
+                    dataSource: response,
+                    optionLabel: "請選擇..."
+                });
+            }, error: function (error) {
+                console.log(error);
+                alert("系統發生錯誤");
+            }
+        });
+    }
+    function searchBookKeeperList() {
+        $.ajax({
+            type: "Post",
+            url: "/Home/SearchBookKeeperName",
+            datatype: "json",
+            success: function (response) {
+                $("#searchBookKeeper").kendoDropDownList({
+                    dataValueField: "USER_ID",
+                    dataTextField: "USER_CNAME",
+                    dataSource: response,
+                    optionLabel: "請選擇..."
+                });
+            }, error: function (error) {
+                console.log(error);
+                alert("系統發生錯誤");
+            }
+        });
+    }
+    function searchBookResultGrid() {
+        $.ajax({
+            type: "Post",
+            url: "/Home/Index",
+            datatype: "json",
+            success: function (response) {
+                $("#searchBookResultGrid").kendoGrid({
+                    dataSource: response,
+                    pageable: { // 分頁設定
+                        input: true,
+                        numeric: false,
+                        pageSize: 5
+                    },
+                    columns: [
+                        { field: "BOOK_CLASS_ID", title: "書籍分類" },
+                        { field: "BOOK_NAME", title: "書名" },
+                        { field: "BOOK_BOUGHT_DATE", title: "購書日期" },
+                        { field: "BOOK_STATUS", title: "書籍狀態" },
+                        { field: "BOOK_KEEPER", title: "保管人" },
+                        {
+                            command: [
+                                {
+                                    name: "刪除",
+                                    click: deleteBook
+                                },
+                                {
+                                    name: "修改",
+                                    click: updateBook
+                                }
+                            ]
+                        }
+                    ]
+                });
+            }, error: function (error) {
+                console.log(error);
+                alert("系統發生錯誤");
+            }
+        });
+
+    }
+    function searchBook() {
+        $("#searchBtn").click(function(){
+            $.ajax({
+                type: "Post",
+                url: "/Home/Index",
+                data: $("#bookSearch").serialize(),
+                dataType: "json",
+                success: function (response) {
+                    //更新Kendo Grid Datasource資料
+                    var grid = $('#searchBookResultGrid').data("kendoGrid");
+                    console.log(grid);
+                    console.log(response);
+                    grid.setDataSource(response);
+                }, error: function (error) {
+                    alert("系統發生錯誤");
+                }
+            });
+            return false;
+        });
+    }
+    function deleteBook() {
+        $.ajax({
+            type: "Post",
+            url: "/Home/Index",
+            data: $("#bookSearch").serialize(),
+            dataType: "json",
+            success: function (response) {
+                //更新Kendo Grid Datasource資料
+                var grid = $('#searchBookResultGrid').data("kendoGrid");
+                console.log(grid);
+                console.log(response);
+                grid.setDataSource(response);
+            }, error: function (error) {
+                alert("系統發生錯誤");
+            }
+        });
+    }
+    function updateBook() {
+
+    }
+    
+</script>

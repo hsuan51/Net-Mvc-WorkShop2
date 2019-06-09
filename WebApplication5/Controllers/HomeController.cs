@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 
@@ -13,17 +14,37 @@ namespace WebApplication5.Controllers
             return View();
         }
 
-        public ActionResult About()
+        [HttpPost()]
+        public ActionResult Index(Models.bookSearchArgs args)
         {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
+            Models.bookService bookService = new Models.bookService();
+            var result = bookService.getSearchBookData(args);
+            return Json(result);
         }
-
-        public ActionResult Contact()
+        [HttpPost()]
+        public ActionResult SearchBookClassName()
         {
-            ViewBag.Message = "Your contact page.";
-
+            Models.bookService bookService = new Models.bookService();
+            var result = bookService.getBookClassName();
+            return Json(result);
+        }
+        [HttpPost()]
+        public ActionResult SearchBookKeeperName()
+        {
+            Models.bookService bookService = new Models.bookService();
+            var result = bookService.getBookKeeperName();
+            return Json(result);
+        }
+        [HttpPost()]
+        public ActionResult SearchBookStatusName()
+        {
+            Models.bookService bookService = new Models.bookService();
+            var result = bookService.getBookStatusName();
+            return Json(result);
+        }
+        [HttpPost()]
+        public ActionResult DeleteBook()
+        {
             return View();
         }
     }
