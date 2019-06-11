@@ -15,37 +15,40 @@ namespace WebApplication5.Controllers
         }
 
         [HttpPost()]
-        public ActionResult Index(Models.bookSearchArgs args)
+        public JsonResult Index(Models.bookSearchArgs args)
         {
             Models.bookService bookService = new Models.bookService();
             var result = bookService.getSearchBookData(args);
             return Json(result);
         }
         [HttpPost()]
-        public ActionResult SearchBookClassName()
+        public JsonResult SearchBookClassName()
         {
             Models.bookService bookService = new Models.bookService();
             var result = bookService.getBookClassName();
             return Json(result);
         }
         [HttpPost()]
-        public ActionResult SearchBookKeeperName()
+        public JsonResult SearchBookKeeperName()
         {
             Models.bookService bookService = new Models.bookService();
             var result = bookService.getBookKeeperName();
             return Json(result);
         }
         [HttpPost()]
-        public ActionResult SearchBookStatusName()
+        public JsonResult SearchBookStatusName()
         {
             Models.bookService bookService = new Models.bookService();
             var result = bookService.getBookStatusName();
             return Json(result);
         }
         [HttpPost()]
-        public ActionResult DeleteBook()
+        public JsonResult InsertBook(Models.bookSearchArgs args)
         {
-            return View();
+            Models.bookService bookService = new Models.bookService();
+            var resultBookId = bookService.insertBook(args);
+            var result = bookService.getOneBookData(resultBookId);
+            return Json(result);
         }
     }
 }
