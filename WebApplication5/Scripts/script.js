@@ -76,9 +76,10 @@ function searchBookResultGrid() {
                     pageSize: 5
                 },
                 columns: [
+                    { hidden: true, field: "BOOK_ID" },
                     { field: "BOOK_CLASS_ID", title: "書籍分類" },
                     { field: "BOOK_NAME", title: "書名" },
-                    { field: "BOOK_BOUGHT_DATE", title: "購書日期" },
+                    { field: "BOOK_BOUGHT_DATE", title: "購書日期", format: "{0:yyyy-MM-dd}" },
                     { field: "BOOK_STATUS", title: "書籍狀態" },
                     { field: "BOOK_KEEPER", title: "保管人" },
                     {
@@ -163,6 +164,22 @@ function insertAction() {
 function updateBook() {
 
 }
-function deleteBook() {
-
+function deleteBook(e) {
+    var grid = $('#searchBookResultGrid').data("kendoGrid");
+    var item = grid.dataItem($(e.target).closest("tr"));
+    console.log(item.BOOK_ID);
+    $.ajax({
+        type: "Post",
+        url: "/Home/DeleteBook",
+        data: { "BOOK_ID": item.BOOK_ID },
+        dataType: "json",
+        success: function (response) {
+            console.log(response);
+            grid.dataSource.remove(item);
+            grid.refresh();
+        }, error: function (error) {
+            alert("系統發生錯誤");
+            console.log(error);
+        }
+    });
 }

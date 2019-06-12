@@ -8,7 +8,7 @@ namespace WebApplication5.Models
 {
     public class book
     {
-        public string BOOK_ID { get; set; }
+        public int BOOK_ID { get; set; }
         public string BOOK_NAME { get; set; }
         public string BOOK_CLASS_ID { get; set; }
         public string BOOK_AUTHOR { get; set; }

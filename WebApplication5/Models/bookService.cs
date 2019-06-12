@@ -168,6 +168,20 @@ namespace WebApplication5.Models
             
             return newId;
         }
+        public int deleteBook(int id)
+        {
+            string sql = "Delete From BOOK_DATA Where BOOK_ID=@bookId";
+            int bookId;
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@bookId", id));
+                bookId = (int)(cmd.ExecuteNonQuery());
+                conn.Close();
+            }
+            return bookId;
+        }
         private List<Models.book> mapBookData(DataTable dt)
         {
             List<Models.book> result = new List<Models.book>();
@@ -175,6 +189,7 @@ namespace WebApplication5.Models
             {
                 result.Add(new book()
                 {
+                    BOOK_ID = (int)row["BOOK_ID"],
                     BOOK_CLASS_ID = row["BOOK_CLASS_NAME"].ToString(),
                     BOOK_NAME = row["BOOK_NAME"].ToString(),
                     BOOK_BOUGHT_DATE = row["BOOK_BOUGHT_DATE"].ToString(),
