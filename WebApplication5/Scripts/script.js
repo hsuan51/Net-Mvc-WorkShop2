@@ -174,9 +174,18 @@ function updateBookWindow(item) {
     $("#windowBookPublisher").val(item.BOOK_PUBLISHER);
     $("#windowBookNote").val(item.BOOK_NOTE);
     $("#windowBookBoughtDate").val(item.BOOK_BOUGHT_DATE);
-    $("#windowBookStatus").text(item.BOOK_STATUS);
-    $("#windowBookKeeper").text(item.BOOK_KEEPER);
-    $("#windowBookClass").text(item.BOOK_CLASS_ID);
+    var windowBookStatus = $("#windowBookStatus").data("kendoDropDownList");
+    windowBookStatus.select(function (dataItem) {
+        return dataItem.CODE_NAME === item.BOOK_STATUS;
+    });
+    var windowBookKeeper = $("#windowBookKeeper").data("kendoDropDownList");
+    windowBookKeeper.select(function (dataItem) {
+        return dataItem.USER_CNAME === item.BOOK_KEEPER;
+    });
+    var windowBookClass = $("#windowBookClass").data("kendoDropDownList");
+    windowBookClass.select(function (dataItem) {
+        return dataItem.BOOK_CLASS_NAME === item.BOOK_CLASS_ID;
+    });
     var dialog = $("#bookWindow").data("kendoWindow");
     dialog.center();
     dialog.open();
@@ -189,45 +198,53 @@ function updateBook(e) {
     console.log(item.BOOK_ID);
     console.log($("#bookWindow").serialize());
     var dialog = $("#bookWindow").data("kendoWindow");
+    var validator = $("#bookWindow").kendoValidator().data("kendoValidator");
     $("#saveUpdateBtn").click(function () {
+        if (validator.validate()) {
+            $.ajax({
+                type: "Post",
+                url: "/Home/UpdateBook",
+                data: $("#bookWindow").serialize(),
+                dataType: "json",
+                success: function (response) {
+                    $("#saveUpdateBtn").hide();
+                    item.set("BOOK_CLASS_ID", response[0]["BOOK_CLASS_ID"]);
+                    item.set("BOOK_NAME", response[0]["BOOK_NAME"]);
+                    item.set("BOOK_BOUGHT_DATE", response[0]["BOOK_BOUGHT_DATE"]);
+                    item.set("BOOK_STATUS", response[0]["BOOK_STATUS"]);
+                    item.set("BOOK_KEEPER", response[0]["BOOK_KEEPER"]);
+                    item.set("BOOK_AUTHOR", response[0]["BOOK_AUTHOR"]);
+                    item.set("BOOK_PUBLISHER", response[0]["BOOK_PUBLISHER"]);
+                    item.set("BOOK_NOTE", response[0]["BOOK_NOTE"]);
+                    console.log(response);
+                    dialog.close();
+                    grid.refresh();
+                }, error: function (error) {
+                    alert("系統發生錯誤");
+                    console.log(error);
+                }
+            });
+        }
+    });
+}
+function deleteBook(e) {
+    if (confirm("確定要刪除?")) {
+        var grid = $('#searchBookResultGrid').data("kendoGrid");
+        var item = grid.dataItem($(e.target).closest("tr"));
+        console.log(item.BOOK_ID);
         $.ajax({
             type: "Post",
-            url: "/Home/UpdateBook",
-            data: $("#bookWindow").serialize(),
+            url: "/Home/DeleteBook",
+            data: { "BOOK_ID": item.BOOK_ID },
             dataType: "json",
             success: function (response) {
-                $("#saveUpdateBtn").hide();
-                item.set("BOOK_CLASS_ID", response[0]["BOOK_CLASS_ID"]);
-                item.set("BOOK_NAME", response[0]["BOOK_NAME"]);
-                item.set("BOOK_BOUGHT_DATE", response[0]["BOOK_BOUGHT_DATE"]);
-                item.set("BOOK_STATUS", response[0]["BOOK_STATUS"]);
-                item.set("BOOK_KEEPER", response[0]["BOOK_KEEPER"]);
                 console.log(response);
-                dialog.close();
+                grid.dataSource.remove(item);
                 grid.refresh();
             }, error: function (error) {
                 alert("系統發生錯誤");
                 console.log(error);
             }
         });
-    });
-}
-function deleteBook(e) {
-    var grid = $('#searchBookResultGrid').data("kendoGrid");
-    var item = grid.dataItem($(e.target).closest("tr"));
-    console.log(item.BOOK_ID);
-    $.ajax({
-        type: "Post",
-        url: "/Home/DeleteBook",
-        data: { "BOOK_ID": item.BOOK_ID },
-        dataType: "json",
-        success: function (response) {
-            console.log(response);
-            grid.dataSource.remove(item);
-            grid.refresh();
-        }, error: function (error) {
-            alert("系統發生錯誤");
-            console.log(error);
-        }
-    });
+    }
 }
