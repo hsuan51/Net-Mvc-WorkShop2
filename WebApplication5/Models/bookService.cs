@@ -22,6 +22,9 @@ namespace WebApplication5.Models
                            BOOK_CLASS.BOOK_CLASS_NAME,
                            BOOK_NAME,
                            BOOK_BOUGHT_DATE,
+                           BOOK_NOTE,
+                           BOOK_AUTHOR,
+                           BOOK_PUBLISHER,
                            MEMBER_M.USER_CNAME,
                            BOOK_CODE.CODE_NAME
                            From [dbo].[BOOK_DATA]
@@ -54,6 +57,9 @@ namespace WebApplication5.Models
                            BOOK_CLASS.BOOK_CLASS_NAME,
                            BOOK_NAME,
                            BOOK_BOUGHT_DATE,
+                           BOOK_NOTE,
+                           BOOK_AUTHOR,
+                           BOOK_PUBLISHER,
                            MEMBER_M.USER_CNAME,
                            BOOK_CODE.CODE_NAME
                            From [dbo].[BOOK_DATA]
@@ -171,16 +177,43 @@ namespace WebApplication5.Models
         public int deleteBook(int id)
         {
             string sql = "Delete From BOOK_DATA Where BOOK_ID=@bookId";
-            int bookId;
+            int deleteBookCount;
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 cmd.Parameters.Add(new SqlParameter("@bookId", id));
-                bookId = (int)(cmd.ExecuteNonQuery());
+                deleteBookCount = (int)(cmd.ExecuteNonQuery());
                 conn.Close();
             }
-            return bookId;
+            return deleteBookCount;
+        }
+        public int updateBook(Models.bookSearchArgs args)
+        {
+            string sql = @" UPDATE BOOK_DATA
+                            SET BOOK_NAME = @bookName, BOOK_AUTHOR = @bookAuthor,
+                                BOOK_PUBLISHER = @bookPublisher, BOOK_NOTE = @bookNote, 
+                                BOOK_BOUGHT_DATE = @bookBoughtDate, BOOK_CLASS_ID = @bookClassId,
+                                BOOK_STATUS = @bookStatus, BOOK_KEEPER = @bookKeeper
+                            WHERE BOOK_ID = @bookId";
+            int updateBookCount;
+            using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand(sql, conn);
+                cmd.Parameters.Add(new SqlParameter("@bookName", args.BOOK_NAME));
+                cmd.Parameters.Add(new SqlParameter("@bookAuthor", args.BOOK_AUTHOR));
+                cmd.Parameters.Add(new SqlParameter("@bookPublisher", args.BOOK_PUBLISHER));
+                cmd.Parameters.Add(new SqlParameter("@bookNote", args.BOOK_NOTE));
+                cmd.Parameters.Add(new SqlParameter("@bookBoughtDate", args.BOOK_BOUGHT_DATE));
+                cmd.Parameters.Add(new SqlParameter("@bookClassId", args.BOOK_CLASS_ID));
+                cmd.Parameters.Add(new SqlParameter("@bookStatus", args.BOOK_STATUS));
+                cmd.Parameters.Add(new SqlParameter("@bookKeeper", args.BOOK_KEEPER == null ? string.Empty : args.BOOK_KEEPER));
+                cmd.Parameters.Add(new SqlParameter("@bookId", args.BOOK_ID));
+                updateBookCount = cmd.ExecuteNonQuery();
+                conn.Close();
+            }
+            return args.BOOK_ID;
         }
         private List<Models.book> mapBookData(DataTable dt)
         {
@@ -192,9 +225,12 @@ namespace WebApplication5.Models
                     BOOK_ID = (int)row["BOOK_ID"],
                     BOOK_CLASS_ID = row["BOOK_CLASS_NAME"].ToString(),
                     BOOK_NAME = row["BOOK_NAME"].ToString(),
-                    BOOK_BOUGHT_DATE = row["BOOK_BOUGHT_DATE"].ToString(),
+                    BOOK_BOUGHT_DATE = DateTime.Parse(row["BOOK_BOUGHT_DATE"].ToString()).ToString("yyyy/MM/dd"),
                     BOOK_STATUS = row["CODE_NAME"].ToString(),
-                    BOOK_KEEPER=row["USER_CNAME"].ToString()
+                    BOOK_KEEPER = row["USER_CNAME"].ToString(),
+                    BOOK_NOTE = row["BOOK_NOTE"].ToString(),
+                    BOOK_AUTHOR = row["BOOK_AUTHOR"].ToString(),
+                    BOOK_PUBLISHER = row["BOOK_PUBLISHER"].ToString()
                 });
             }
             return result;

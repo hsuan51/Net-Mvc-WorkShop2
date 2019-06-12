@@ -44,49 +44,70 @@
     </div>
     <div id="searchBookResultGrid"></div>
 }
-@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "bookInsert" , style = "display:none" }))
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "bookWindow", style = "display:none" }))
 {
     <div class="form-horizontal justify-content-center">
 
+        <div class="form-group" style="display:none">
+            @Html.LabelFor(model => model.BOOK_ID, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_ID, new { @class = "form-control", id = "windowBookId" })
+            </div>
+        </div>
         <div class="form-group">
             @Html.LabelFor(model => model.BOOK_NAME, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_NAME, new { @class = "form-control", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_NAME, new { @class = "form-control", required = "true", validationmessage = "必填", id = "windowBookName" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.BOOK_AUTHOR, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_AUTHOR, new { @class = "form-control", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_AUTHOR, new { @class = "form-control", required = "true", validationmessage = "必填", id = "windowBookAuthor" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.BOOK_PUBLISHER, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_PUBLISHER, new { @class = "form-control", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_PUBLISHER, new { @class = "form-control", required = "true", validationmessage = "必填", id = "windowBookPublisher" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.BOOK_NOTE, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_NOTE, new { @class = "form-control", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_NOTE, new { @class = "form-control", required = "true", validationmessage = "必填", id = "windowBookNote" })
             </div>
         </div>
         <div class="form-group">
             @Html.LabelFor(model => model.BOOK_BOUGHT_DATE, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_BOUGHT_DATE, new { @class = "form-control", id="bookDatePicker", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_BOUGHT_DATE, new { @class = "form-control", id = "windowBookBoughtDate", required = "true", validationmessage = "必填" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.BOOK_CLASS_ID, htmlAttributes: new { @class = "control-label col-md-2"  })
+            @Html.LabelFor(model => model.BOOK_CLASS_ID, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.TextBoxFor(model => model.BOOK_CLASS_ID, new { @class = "form-control", id = "insertBookClass", required = "true", validationmessage = "必填" })
+                @Html.TextBoxFor(model => model.BOOK_CLASS_ID, new { @class = "form-control", id = "windowBookClass", required = "true", validationmessage = "必填" })
+            </div>
+        </div>
+        <div class="form-group" style="display:none" id="updateBookStatusArea">
+            @Html.LabelFor(model => model.BOOK_STATUS, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_STATUS, new { @class = "form-control", id = "windowBookStatus", required = "true", validationmessage = "必填" })
+            </div>
+        </div>
+        <div class="form-group" style="display:none" id="updateBookKeeperArea">
+            @Html.LabelFor(model => model.BOOK_KEEPER, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BOOK_KEEPER, new { @class = "form-control", id = "windowBookKeeper", validationmessage = "必填" })
             </div>
         </div>
         <div class="form-group">
-            <div class="col-md-10">
-                <input type="button" value="儲存" id="saveBtn" class="btn btn-default" />
+            <div class="col-md-5">
+                <input type="button" value="儲存" id="saveInsertBtn" class="btn btn-default" style="display:none" />
+            </div>
+            <div class="col-md-5">
+                <input type="button" value="儲存" id="saveUpdateBtn" class="btn btn-default" style="display:none" />
             </div>
         </div>
 

@@ -9,7 +9,7 @@ namespace WebApplication5.Models
 {
     public class bookSearchArgs
     {
-
+        public int BOOK_ID { get; set; }
         [DisplayName("書籍名稱")]
         [Required(ErrorMessage = "必填")]
         public string BOOK_NAME { get; set; }

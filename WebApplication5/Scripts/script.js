@@ -6,7 +6,7 @@
     searchBookResultGrid();
     searchBook();
     insertAction();
-    $("#bookDatePicker").kendoDatePicker({ value: new Date(), format: "yyyy/MM/dd" });
+    $("#windowBookBoughtDate").kendoDatePicker({ value: new Date(), format: "yyyy/MM/dd" });
 });
 function searchBookClassList() {
     $.ajax({
@@ -14,7 +14,7 @@ function searchBookClassList() {
         url: "/Home/SearchBookClassName",
         datatype: "json",
         success: function (response) {
-            $("#searchBookClass,#insertBookClass").kendoDropDownList({
+            $("#searchBookClass,#windowBookClass").kendoDropDownList({
                 dataValueField: "BOOK_CLASS_ID",
                 dataTextField: "BOOK_CLASS_NAME",
                 dataSource: response,
@@ -32,7 +32,7 @@ function BookStatusList() {
         url: "/Home/SearchBookStatusName",
         datatype: "json",
         success: function (response) {
-            $("#searchBookStatus").kendoDropDownList({
+            $("#searchBookStatus,#windowBookStatus").kendoDropDownList({
                 dataValueField: "CODE_ID",
                 dataTextField: "CODE_NAME",
                 dataSource: response,
@@ -50,7 +50,7 @@ function searchBookKeeperList() {
         url: "/Home/SearchBookKeeperName",
         datatype: "json",
         success: function (response) {
-            $("#searchBookKeeper").kendoDropDownList({
+            $("#searchBookKeeper,#windowBookKeeper").kendoDropDownList({
                 dataValueField: "USER_ID",
                 dataTextField: "USER_CNAME",
                 dataSource: response,
@@ -124,23 +124,24 @@ function searchBook() {
     });
 }
 function insertBookWindow() {
-    $("#bookInsert").kendoWindow({
+    $("#saveInsertBtn").show();
+    $("#bookWindow").kendoWindow({
         title: "新增書籍資料"
     });
-    var dialog = $("#bookInsert").data("kendoWindow");
+    var dialog = $("#bookWindow").data("kendoWindow");
     dialog.center();
     dialog.open();
 }
 function insertBook() {
-    $("#saveBtn").click(function () {
-        var validator = $("#bookInsert").kendoValidator().data("kendoValidator")
-        var dialog = $("#bookInsert").data("kendoWindow");
+    $("#saveInsertBtn").click(function () {
+        var validator = $("#bookWindow").kendoValidator().data("kendoValidator")
+        var dialog = $("#bookWindow").data("kendoWindow");
         var grid = $('#searchBookResultGrid').data("kendoGrid");
         if (validator.validate()) {
             $.ajax({
                 type: "Post",
                 url: "/Home/InsertBook",
-                data: $("#bookInsert").serialize(),
+                data: $("#bookWindow").serialize(),
                 dataType: "json",
                 success: function (response) {
                     console.log("insertresponse");
@@ -148,6 +149,7 @@ function insertBook() {
                     dialog.close();
                     grid.dataSource.add(response[0]);
                     grid.refresh();
+                    $("#saveInsertBtn").hide();
                 }, error: function (error) {
                     alert("系統發生錯誤");
                 }
@@ -161,8 +163,54 @@ function insertAction() {
     });
     insertBook();
 }
-function updateBook() {
-
+function updateBookWindow(item) {
+    $("#updateBookStatusArea,#updateBookKeeperArea,#saveUpdateBtn").show();
+    $("#bookWindow").kendoWindow({
+        title: "修改書籍資料"
+    });
+    $("#windowBookId").val(item.BOOK_ID);
+    $("#windowBookName").val(item.BOOK_NAME);
+    $("#windowBookAuthor").val(item.BOOK_AUTHOR);
+    $("#windowBookPublisher").val(item.BOOK_PUBLISHER);
+    $("#windowBookNote").val(item.BOOK_NOTE);
+    $("#windowBookBoughtDate").val(item.BOOK_BOUGHT_DATE);
+    $("#windowBookStatus").text(item.BOOK_STATUS);
+    $("#windowBookKeeper").text(item.BOOK_KEEPER);
+    $("#windowBookClass").text(item.BOOK_CLASS_ID);
+    var dialog = $("#bookWindow").data("kendoWindow");
+    dialog.center();
+    dialog.open();
+}
+function updateBook(e) {
+    var grid = $('#searchBookResultGrid').data("kendoGrid");
+    var item = grid.dataItem($(e.target).closest("tr"));
+    console.log(item);
+    updateBookWindow(item);
+    console.log(item.BOOK_ID);
+    console.log($("#bookWindow").serialize());
+    var dialog = $("#bookWindow").data("kendoWindow");
+    $("#saveUpdateBtn").click(function () {
+        $.ajax({
+            type: "Post",
+            url: "/Home/UpdateBook",
+            data: $("#bookWindow").serialize(),
+            dataType: "json",
+            success: function (response) {
+                $("#saveUpdateBtn").hide();
+                item.set("BOOK_CLASS_ID", response[0]["BOOK_CLASS_ID"]);
+                item.set("BOOK_NAME", response[0]["BOOK_NAME"]);
+                item.set("BOOK_BOUGHT_DATE", response[0]["BOOK_BOUGHT_DATE"]);
+                item.set("BOOK_STATUS", response[0]["BOOK_STATUS"]);
+                item.set("BOOK_KEEPER", response[0]["BOOK_KEEPER"]);
+                console.log(response);
+                dialog.close();
+                grid.refresh();
+            }, error: function (error) {
+                alert("系統發生錯誤");
+                console.log(error);
+            }
+        });
+    });
 }
 function deleteBook(e) {
     var grid = $('#searchBookResultGrid').data("kendoGrid");

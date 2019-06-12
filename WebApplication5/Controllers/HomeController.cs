@@ -57,5 +57,20 @@ namespace WebApplication5.Controllers
             var result = bookService.deleteBook(book.BOOK_ID);
             return Json(result);
         }
+        [HttpPost()]
+        public JsonResult UpdateBook(Models.bookSearchArgs args)
+        {
+            Models.bookService bookService = new Models.bookService();
+            var resultBookId = bookService.updateBook(args);
+            var result = bookService.getOneBookData(resultBookId);
+            return Json(result);
+        }
+        [HttpPost()]
+        public JsonResult SearchOneBook(Models.book book)
+        {
+            Models.bookService bookService = new Models.bookService();
+            var result = bookService.getOneBookData(book.BOOK_ID);
+            return Json(result);
+        }
     }
 }
